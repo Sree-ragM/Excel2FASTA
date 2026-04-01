@@ -37,7 +37,11 @@ Designed for bioinformatics workflows, this tool allows users to upload Excel fi
 
 ## ▶️ Usage
 
-visit
+Simply visit the web application:
+
+🔗 https://your-website-link.com
+
+Upload your Excel file and follow the on-screen steps to generate your FASTA file.
 
 ---
 
