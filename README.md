@@ -39,7 +39,7 @@ Designed for bioinformatics workflows, this tool allows users to upload Excel fi
 
 Simply visit the web application:
 
-🔗 https://your-website-link.com
+🔗 [Excel2FASTA](https://sree-ragm.github.io/Excel2FASTA/)
 
 Upload your Excel file and follow the on-screen steps to generate your FASTA file.
 
