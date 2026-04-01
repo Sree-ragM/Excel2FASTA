@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel → FASTA Converter</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Excel → FASTA Converter</h1>
+        <p class="muted">
+          Upload an Excel file, choose a column, preview data, and generate
+          FASTA.
+        </p>
+
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+      </div>
+
+      <div class="card hidden" id="columnCard">
+        <h3>Select Column</h3>
+        <select id="columnSelect"></select>
+        <button id="processBtn">Preview Column</button>
+      </div>
+
+      <div class="card hidden" id="previewCard">
+        <h3>Preview</h3>
+        <pre id="preview"></pre>
+        <button id="confirmBtn">Confirm & Generate FASTA</button>
+      </div>
+
+      <div class="card hidden" id="outputCard">
+        <h3>FASTA Output</h3>
+        <pre id="fastaOutput"></pre>
+
+        <div class="row">
+          <button id="downloadBtn">Download FASTA</button>
+          <button class="secondary" id="resetBtn">Start Over</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>©<span id="year"></span>-Sreerag M. All rights reserved.</footer>
+    <script src="script.js"></script>
+  </body>
+</html>
