@@ -18,7 +18,6 @@
 
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         jsonData = XLSX.utils.sheet_to_json(sheet);
-
         populateColumns();
     };
 
@@ -39,17 +38,51 @@
     columnCard.classList.remove("hidden");
     }
 
-    document.getElementById("processBtn").addEventListener("click", () => {
+document.getElementById("processBtn").addEventListener("click", () => {
     const col = document.getElementById("columnSelect").value;
 
-    currentValues = jsonData.map((r) => r[col]).filter((v) => v);
+    const rawValues = jsonData.map((r) => r[col]);
 
+    const seen = new Set();
+    const cleaned = [];
+    const logs = [];
+
+    rawValues.forEach((val, index) => {
+        if (!val) return;
+
+        let value = String(val).trim();
+
+        // 🔧 Clean: keep only alphabets
+        const original = value;
+        value = value.replace(/[^A-Za-z]/g, "");
+
+        if (!value) {
+            logs.push(`Row ${index + 2}: became empty after cleaning`);
+            return;
+        }
+
+        // 🔁 Check duplicates AFTER cleaning
+        if (seen.has(value)) {
+            logs.push(`Row ${index + 2}: duplicate after cleaning → ${value}`);
+            return;
+        }
+
+        if (original !== value) {
+            logs.push(`Row ${index + 2}: cleaned "${original}" → "${value}"`);
+        }
+
+        seen.add(value);
+        cleaned.push(value);
+    });
+
+    currentValues = cleaned;
+
+    // Show preview
     document.getElementById("preview").textContent =
         currentValues.join("\n");
 
     previewCard.classList.remove("hidden");
-    });
-
+});
     document.getElementById("confirmBtn").addEventListener("click", () => {
     let fasta = "";
 
