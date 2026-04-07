@@ -82,6 +82,15 @@ document.getElementById("processBtn").addEventListener("click", () => {
         currentValues.join("\n");
 
     previewCard.classList.remove("hidden");
+
+    // Show cleaning report
+    if (logs.length > 0) {
+        alert(
+            "Cleaning Summary:\n\n" +
+            logs.slice(0, 10).join("\n") +
+            (logs.length > 10 ? "\n..." : "")
+        );
+    }
 });
     document.getElementById("confirmBtn").addEventListener("click", () => {
     let fasta = "";
