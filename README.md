@@ -1,59 +1,119 @@
-# 🧬 Excel2FASTA
+# Excel2FASTA
 
-A modern web application that converts Excel spreadsheet data into FASTA format.  
-Designed for bioinformatics workflows, this tool allows users to upload Excel files, select sequence-containing columns, preview data, and generate downloadable FASTA files with ease.
+A lightweight, browser-based tool for proteomics researchers to preview, filter, and export *de novo* peptide sequences from PEAKS or similar software output files directly into FASTA format.
 
----
-
-## 🚀 Features
-
-- 📁 Upload Excel files (`.xlsx`, `.xls`)
-- 🔍 Automatically detect column headers
-- 📊 Select a specific column for sequence processing
-- 👀 Preview extracted data before processing
-- 🧬 Generate FASTA format with auto headers (`>seq1`, `>seq2`, ...)
-- ⬇️ Download FASTA file instantly
-- 📱 Fully responsive and modern UI
+> 🚀 No installation  
+> 🔒 No server  
+> 💻 Fully client-side (your data never leaves your machine)
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Features
 
-- **Frontend:** HTML, CSS, JavaScript
-- **Library:** SheetJS (xlsx)
+- 📂 **Drag-and-drop file loading**  
+  Supports `.xlsx`, `.xls`, and `.csv` files
 
----
+- 🎨 **Colour-coded peptide viewer**  
+  Each amino acid is coloured based on its local confidence score
 
-## 📂 How It Works
+- 🔢 **Per-residue confidence chips**  
+  Displays raw local confidence values for every amino acid
 
-1. Upload an Excel file
-2. Select the column containing sequence data
-3. Preview the extracted values
-4. Confirm the selection
-5. Generate FASTA output
-6. Download the `.fasta` file
+- 🎯 **Dual filtering system**
+  - Filter by **DeNovo Score**
+  - Filter by **minimum per-residue confidence**
 
----
+- 🧹 **Automatic deduplication**  
+  Keeps only the highest-scoring peptide among identical sequences (ignoring PTMs)
 
-## ▶️ Usage
+- 📄 **FASTA export**  
+  Generates clean, numbered FASTA sequences (`output.fasta`)
 
-Simply visit the web application:
-
-🔗 [Excel2FASTA](https://sree-ragm.github.io/Excel2FASTA/)
-
-Upload your Excel file and follow the on-screen steps to generate your FASTA file.
+- 🔐 **Fully client-side processing**  
+  No uploads, no data tracking — everything runs in your browser
 
 ---
 
-## ⚠️ Notes
+## 🎨 Colour Legend
 
-- Ensure your Excel file contains a header row
-- Empty cells are ignored automatically
-- This tool runs entirely in the browser (no server required)
+| Colour | Confidence Threshold |
+|--------|----------------------|
+| 🔵 Blue | > 90% |
+| 🟣 Purple | 80–90% |
+| 🟢 Green | < 80% |
+
+This colour scheme applies to:
+- Amino acid letters
+- DeNovo score badges
+- Per-residue confidence chips
 
 ---
 
-## 👨‍💻 Author
+## 📥 Input Requirements
 
-**Sreerag M**
+Your input file must contain the following columns (case-insensitive):
 
+### Required Columns
+
+| Column | Description |
+|--------|-------------|
+| `Peptide` | Peptide sequence (PTMs supported, e.g. `SLDLN(+.98)SLLAEVK`) |
+| `Denovo Score` | Overall de novo confidence score (0–100) |
+
+### Optional Column
+
+| Column | Description |
+|--------|-------------|
+| `local confidence (%)` | Space-separated per-residue confidence values (e.g. `94 98 100 100 99`) |
+
+> ✅ **PEAKS Compatibility**  
+> Files exported directly from PEAKS *de novo* sequencing results work without modification.
+
+---
+
+## 🧬 Deduplication Logic
+
+- PTM annotations are removed before comparison
+- Identical peptide sequences are grouped
+- Only the entry with the **highest DeNovo Score** is retained
+- Removed duplicates are reported in the stats bar
+
+---
+
+## 🔍 Filtering Logic
+
+Filters are applied using **AND logic**:
+
+### 1. DeNovo Score Filter
+Removes peptides with scores below the threshold
+
+### 2. Minimum Local Confidence Filter
+- Evaluates **each amino acid individually**
+- If *any* residue falls below the threshold → peptide is excluded
+
+> ⚠️ Example:  
+> If threshold = 90%, **every residue must be ≥ 90%**
+
+---
+
+## 🌐 Browser Support
+
+- Chrome ✅  
+- Firefox ✅  
+- Edge ✅  
+
+---
+
+## 🚀 Getting Started
+
+1. Open the application in your browser
+2. Drag and drop your file (`.xlsx`, `.xls`, `.csv`)
+3. Adjust filters as needed
+4. Preview coloured peptide sequences
+5. Export results as FASTA
+
+---
+
+## 📜 License
+
+© Sreerag M. All rights reserved.
