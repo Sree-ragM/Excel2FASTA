@@ -12,29 +12,106 @@
       <div class="card">
         <h1>Excel2FASTA Converter</h1>
         <p class="muted">
-          Upload an Excel file, choose a column, preview data, and generate
-          FASTA.
+          Upload an Excel or CSV file to preview peptides with local confidence
+          scores, then generate FASTA.
         </p>
-
-        <input type="file" id="fileInput" accept=".xlsx,.xls" />
-      </div>
-
-      <div class="card hidden" id="columnCard">
-        <h3>Select Column</h3>
-        <select id="columnSelect"></select>
-        <button id="processBtn">Preview Column</button>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
       </div>
 
       <div class="card hidden" id="previewCard">
-        <h3>Preview</h3>
-        <pre id="preview"></pre>
-        <button id="confirmBtn">Confirm & Generate FASTA</button>
+        <div class="preview-header">
+          <h3>Peptide Preview</h3>
+          <div class="legend">
+            <span class="legend-item"
+              ><span class="dot dot-blue"></span>&gt;90%</span
+            >
+            <span class="legend-item"
+              ><span class="dot dot-purple"></span>80–90%</span
+            >
+            <span class="legend-item"
+              ><span class="dot dot-green"></span>&lt;80%</span
+            >
+          </div>
+        </div>
+
+        <!-- ── Filters ── -->
+        <div class="filters">
+          <div class="filter-group">
+            <label
+              >DeNovo Score ≥
+              <span id="denovoVal" class="filter-val">0</span></label
+            >
+            <div class="filter-input-row">
+              <input
+                type="range"
+                id="filterDenovoRange"
+                min="0"
+                max="100"
+                value="0"
+                step="1"
+              />
+              <input
+                type="number"
+                id="filterDenovo"
+                min="0"
+                max="100"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="filter-group">
+            <label
+              >Min Local Confidence ≥
+              <span id="localVal" class="filter-val">0</span></label
+            >
+            <div class="filter-input-row">
+              <input
+                type="range"
+                id="filterLocalRange"
+                min="0"
+                max="100"
+                value="0"
+                step="1"
+              />
+              <input
+                type="number"
+                id="filterLocal"
+                min="0"
+                max="100"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button id="applyFilterBtn" class="btn-filter">
+              Apply Filters
+            </button>
+            <button id="clearFilterBtn" class="btn-filter secondary">
+              Clear
+            </button>
+          </div>
+          <div id="filterStats" class="filter-stats"></div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="peptideTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Peptide</th>
+                <th>DeNovo Score</th>
+                <th>Local Confidence (%)</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <button id="confirmBtn">Confirm &amp; Generate FASTA</button>
       </div>
 
       <div class="card hidden" id="outputCard">
         <h3>FASTA Output</h3>
         <pre id="fastaOutput"></pre>
-
         <div class="row">
           <button id="downloadBtn">Download FASTA</button>
           <button class="secondary" id="resetBtn">Start Over</button>
