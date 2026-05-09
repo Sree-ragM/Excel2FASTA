@@ -26,7 +26,32 @@ body {
     color: var(--text);
     padding-bottom: var(--footer-height);
 }
+nav {
+    background-color: #1e293b;
+    /* dark blue-gray */
+    padding: 12px 20px;
+    display: flex;
+    gap: 20px;
+    text-align: center;
+    justify-content: center;
+}
 
+nav a {
+    color: #f1f5f9;
+    /* light text */
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+nav a:hover {
+    background-color: #38bdf8;
+    /* light blue */
+    color: #0f172a;
+}
 .container {
     flex: 1;
     max-width: 1000px;
