@@ -34,7 +34,7 @@ function parseNCBI(text) {
     ncbiMap[acc].push(name);
   }
   document.getElementById("ncbiCount").textContent =
-    `Total Proteins in NCBI DB: ${lines.length - 1}`;
+    `Total Proteins in NCBI DB: ${lines.length - 1} entries`;
 }
 
 /* -------- Accession Extractor (IMPORTANT) -------- */
