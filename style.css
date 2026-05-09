@@ -36,21 +36,28 @@ nav {
     justify-content: center;
 }
 
+
+
 nav a {
+    position: relative;
     color: #f1f5f9;
-    /* light text */
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
 }
 
+nav a:visited {
+    color: #f1f5f9;
+}
+
+/* hover */
 nav a:hover {
-    background-color: #38bdf8;
-    /* light blue */
-    color: #0f172a;
+    color: var(--blue);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* optional: active click */
+nav a:active {
+    color: var(--blue);
 }
 .container {
     flex: 1;

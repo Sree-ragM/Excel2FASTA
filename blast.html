@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BLAST Analysis</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- NAVBAR (same as your main page) -->
+    <nav>
+      <a href="index.html">Excel2FASTA</a>
+      <a href="blast.html">BLAST Analysis</a>
+    </nav>
+
+    <div class="container">
+      <!-- Upload Card -->
+      <div class="card">
+        <h1>BLAST → NCBI Mapper</h1>
+        <p class="muted">Upload BLAST format 6 file (.tsv / .csv).</p>
+
+        <input type="file" id="fileInput" accept=".txt,.tsv,.csv" />
+      </div>
+
+      <!-- Filters Card (EXACT STYLE MATCH) -->
+      <div class="card">
+        <div class="preview-header">
+          <h3>Filters</h3>
+        </div>
+
+        <div class="filters">
+          <!-- % Identity -->
+          <div class="filter-group">
+            <label>
+              % Identity ≥
+              <span id="pidentVal" class="filter-val">0</span>
+            </label>
+            <div class="filter-input-row">
+              <input
+                type="range"
+                id="r-pident"
+                min="0"
+                max="100"
+                value="0"
+                oninput="syncSlider('pident', false)"
+              />
+              <input
+                type="number"
+                id="n-pident"
+                value="0"
+                oninput="syncInput('pident', false)"
+              />
+            </div>
+          </div>
+
+          <!-- E-value -->
+          <div class="filter-group">
+            <label>
+              E-value ≤
+              <span id="evalueVal" class="filter-val">100</span>
+            </label>
+            <div class="filter-input-row">
+              <input
+                type="range"
+                id="r-evalue"
+                min="-10"
+                max="2"
+                step="0.1"
+                value="2"
+                oninput="syncSlider('evalue')"
+              />
+              <input
+                type="number"
+                id="n-evalue"
+                value="100"
+                oninput="syncInput('evalue')"
+              />
+            </div>
+          </div>
+
+          <!-- Qcov -->
+          <div class="filter-group">
+            <label>
+              Query Coverage ≥
+              <span id="qcovVal" class="filter-val">0</span>
+            </label>
+            <div class="filter-input-row">
+              <input
+                type="range"
+                id="r-qcov"
+                min="0"
+                max="100"
+                value="0"
+                oninput="syncSlider('qcov')"
+              />
+              <input
+                type="number"
+                id="n-qcov"
+                value="0"
+                oninput="syncInput('qcov')"
+              />
+            </div>
+          </div>
+
+          <!-- Actions (EXACT BUTTON STYLE) -->
+          <div class="filter-actions">
+            <button class="btn-filter" onclick="applyFilters()">
+              Apply Filters
+            </button>
+            <button class="btn-filter secondary" onclick="exportCSV()">
+              Export CSV
+            </button>
+          </div>
+
+          <div id="filterStats" class="filter-stats"></div>
+        </div>
+      </div>
+
+      <!-- Results Card -->
+      <div class="card">
+        <div class="preview-header">
+          <h3>Results</h3>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Query</th>
+                <th>Accession</th>
+                <th>% Identity</th>
+                <th>E-value</th>
+                <th>Qcov</th>
+                <th>Protein Name</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: #6b7280">
+                  Upload a BLAST file to see results
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER (EXACT SAME) -->
+    <footer>©<span id="year"></span> - Sreerag M. All rights reserved.</footer>
+
+    <script>
+      // auto year
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+    <script src="blast.js"></script>
+  </body>
+</html>
