@@ -17,8 +17,14 @@
     <div class="container">
       <!-- Upload Card -->
       <div class="card">
-        <h1>BLAST → NCBI Mapper</h1>
-        <p class="muted">Upload BLAST format 6 file (.tsv / .csv).</p>
+        <div class="card-header">
+          <div>
+            <h1>BLAST → NCBI Mapper</h1>
+            <p class="muted">Upload BLAST format 6 file (.tsv / .csv).</p>
+          </div>
+
+          <p id="ncbiCount" class="muted ncbi-count">NCBI DB: Loading...</p>
+        </div>
 
         <input type="file" id="fileInput" accept=".txt,.tsv,.csv" />
       </div>
@@ -122,7 +128,9 @@
         <div class="preview-header">
           <h3>Results</h3>
         </div>
-
+        <div id="resultsSummary" style="margin: 10px 0; font-weight: 600">
+          Total Hits: 0 | Filtered Hits: 0
+        </div>
         <div class="table-wrap">
           <table>
             <thead>

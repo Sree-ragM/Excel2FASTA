@@ -1,5 +1,5 @@
 :root {
-    --footer-height: 70px;
+    --footer-height: 60px;
     --primary: #4f46e5;
     --bg: #f9fafb;
     --card: #ffffff;
@@ -24,16 +24,18 @@ body {
     font-family: "Inter", system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
-    padding-bottom: var(--footer-height);
+    /* padding-bottom: var(--footer-height); */
 }
 nav {
     background-color: #1e293b;
     /* dark blue-gray */
-    padding: 12px 20px;
+    /* padding: 17px 20px; */
     display: flex;
     gap: 20px;
     text-align: center;
     justify-content: center;
+    height: 60px;
+        align-items: center;
 }
 
 
@@ -42,6 +44,8 @@ nav a {
     position: relative;
     color: #f1f5f9;
     text-decoration: none;
+    text-align: center;
+    justify-content: center;
 }
 
 nav a:visited {
@@ -72,6 +76,22 @@ nav a:active {
     padding: 20px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.ncbi-count {
+  background: #eef2ff;
+  padding: 10px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: #111827 1px solid;
+  border-style: dashed;
+  color: var(--text);
 }
 
 h1 {
@@ -438,7 +458,7 @@ pre {
 }
 
 footer {
-    position: fixed;
+    position: relative;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -449,4 +469,6 @@ footer {
     align-items: center;
     justify-content: center;
     font-size: 0.9rem;
+    margin-top: 40px;
 }
+

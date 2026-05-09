@@ -1,5 +1,6 @@
 const NCBI_TSV_URL = "serpentes.tsv";
 
+/* -------- State -------- */
 let ncbiMap = {};
 let blastData = [];
 let filteredData = [];
@@ -9,20 +10,57 @@ let fileContent = "";
 async function loadNCBI() {
   const res = await fetch(NCBI_TSV_URL);
   const text = await res.text();
-  ncbiMap = parseNCBI(text);
+  parseNCBI(text);
 }
 
+/* -------- Parse NCBI (KEEP EVERYTHING) -------- */
 function parseNCBI(text) {
   const lines = text.trim().split("\n");
-  const map = {};
+
+  ncbiMap = {};
 
   for (let i = 1; i < lines.length; i++) {
-    const c = lines[i].split(/\t|,/);
-    const acc = c[2];
+    const c = lines[i].split("\t");  // ✅ FIXED
+
     const name = c[0];
-    if (acc) map[acc] = name;
+    const acc = c[2];
+
+    if (!acc) continue;
+
+    if (!ncbiMap[acc]) {
+      ncbiMap[acc] = [];
+    }
+
+    ncbiMap[acc].push(name);
   }
-  return map;
+  document.getElementById("ncbiCount").textContent =
+    `Total Proteins in NCBI DB: ${lines.length - 1}`;
+}
+
+/* -------- Accession Extractor (IMPORTANT) -------- */
+function extractAccession(sseqid) {
+  const parts = sseqid.split("|");
+
+  let final_id = "";
+
+  // Case 1: PDB
+  if (parts.length >= 3 && parts[0].toLowerCase() === "pdb") {
+    const pdb_id = parts[1].trim();
+    const chain = parts[2].trim();
+    final_id = `${pdb_id}_${chain}`;
+  }
+
+  // Case 2: UniProt / others
+  else if (parts.length >= 2) {
+    final_id = parts[1].trim();
+  }
+
+  // Case 3: fallback
+  else {
+    final_id = sseqid;
+  }
+
+  return final_id;
 }
 
 /* -------- AUTO FILE UPLOAD -------- */
@@ -30,17 +68,22 @@ document.getElementById("fileInput").addEventListener("change", async function(e
   const file = e.target.files[0];
   if (!file) return;
 
+
   const reader = new FileReader();
 
   reader.onload = async function(e) {
     fileContent = e.target.result;
 
-    if (Object.keys(ncbiMap).length === 0) {
+
+    if (!Object.keys(ncbiMap).length) {
       await loadNCBI();
     }
 
-    blastData = parseBlast(fileContent);
-    applyFilters();   // 🔥 AUTO RUN
+    blastData = await parseBlast(fileContent);
+    const maxE = getMaxEvalue(blastData);
+    setEvalueSlider(maxE);
+
+    applyFilters();
   };
 
   reader.readAsText(file);
@@ -48,22 +91,35 @@ document.getElementById("fileInput").addEventListener("change", async function(e
 
 /* -------- Parse BLAST -------- */
 function parseBlast(text) {
-  return text.trim().split("\n").map(line => {
+  return text.trim().split("\n").map((line, i) => {
     const c = line.split(/\t|,/);
+
+    const rawAcc = c[1];
+    const acc = extractAccession(rawAcc);
+
+    const proteins = ncbiMap[acc] || [];
+
+    if (i < 5) {
+    }
 
     return {
       qseqid: c[0],
-      sseqid: c[1],
+      sseqid: acc,
       pident: parseFloat(c[2]) || 0,
       evalue: parseFloat(c[10]) || 0,
       qcovs: parseFloat(c[12]) || 0,
-      protein: ncbiMap[c[1]] || ""
+
+      // display limited
+      protein: proteins.slice(0, 3).join("; "),
+
+      // full list for tooltip/export
+      fullProtein: proteins.join("; ")
     };
   });
 }
 
-/* -------- FILTER SYNC -------- */
-function syncSlider(id, apply = false) {
+/* -------- FILTER SYNC (NO AUTO APPLY) -------- */
+function syncSlider(id) {
   if (id === "evalue") {
     const val = Math.pow(10, document.getElementById("r-evalue").value);
     document.getElementById("n-evalue").value = val.toExponential(2);
@@ -73,11 +129,9 @@ function syncSlider(id, apply = false) {
     document.getElementById("n-" + id).value = v;
     document.getElementById(id + "Val").textContent = v;
   }
-
-  if (apply) applyFilters();   // ❌ won't run unless explicitly told
 }
 
-function syncInput(id, apply = false) {
+function syncInput(id) {
   if (id === "evalue") {
     const val = parseFloat(document.getElementById("n-evalue").value);
     document.getElementById("r-evalue").value =
@@ -88,11 +142,9 @@ function syncInput(id, apply = false) {
     document.getElementById("r-" + id).value = v;
     document.getElementById(id + "Val").textContent = v;
   }
-
-  if (apply) applyFilters();   // ❌ won't run
 }
 
-/* -------- Filter -------- */
+/* -------- Apply Filters -------- */
 function applyFilters() {
   const minP = parseFloat(document.getElementById("n-pident").value);
   const maxE = parseFloat(document.getElementById("n-evalue").value);
@@ -104,12 +156,23 @@ function applyFilters() {
     r.qcovs >= minQ
   );
 
+  updateSummary();   // 🔥 ADD THIS
   renderTable();
 }
 
 /* -------- Render -------- */
 function renderTable() {
   const tbody = document.getElementById("tableBody");
+
+  if (!filteredData.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; color:#6b7280;">
+          No results match filters
+        </td>
+      </tr>`;
+    return;
+  }
 
   tbody.innerHTML = filteredData.map(r => `
     <tr>
@@ -122,18 +185,25 @@ function renderTable() {
       <td>${r.pident}</td>
       <td>${r.evalue}</td>
       <td>${r.qcovs}</td>
-      <td>${r.protein || "-"}</td>
+      <td title="${r.fullProtein}">${r.protein || "-"}</td>
     </tr>
   `).join("");
 }
 
-/* -------- Export -------- */
+/* -------- Export CSV -------- */
 function exportCSV() {
   if (!filteredData.length) return;
 
+
   const header = ["Query","Accession","Identity","Evalue","Qcov","Protein"];
+
   const rows = filteredData.map(r => [
-    r.qseqid, r.sseqid, r.pident, r.evalue, r.qcovs, r.protein
+    r.qseqid,
+    r.sseqid,
+    r.pident,
+    r.evalue,
+    r.qcovs,
+    r.fullProtein
   ]);
 
   const csv = [header, ...rows].map(r => r.join(",")).join("\n");
@@ -143,4 +213,45 @@ function exportCSV() {
   a.href = URL.createObjectURL(blob);
   a.download = "blast_results.csv";
   a.click();
+
+}
+
+function updateSummary() {
+  const total = blastData.length;
+  const filtered = filteredData.length;
+
+  document.getElementById("resultsSummary").textContent =
+    `Total Hits: ${total} | Filtered Hits: ${filtered}`;
+}
+
+function getMaxEvalue(data) {
+  let maxE = 0;
+
+  data.forEach(r => {
+    if (r.evalue > maxE) {
+      maxE = r.evalue;
+    }
+  });
+
+  console.log("🔍 Max E-value:", maxE);
+  return maxE;
+}
+
+function setEvalueSlider(maxE) {
+  if (maxE <= 0) return;
+
+  const logMax = Math.min(Math.log10(maxE), 10);
+
+  const slider = document.getElementById("r-evalue");
+  const input = document.getElementById("n-evalue");
+
+  slider.max = logMax;
+  slider.value = logMax;
+
+  input.value = maxE;
+
+  document.getElementById("evalueVal").textContent =
+    maxE.toExponential(1);
+
+  console.log("🎚️ Slider max set to:", logMax);
 }
